@@ -3,6 +3,18 @@ html, body, svg {
   height: 100%;
   font-size: 1.4em;
 }
+
+@media screen and (min-width : 500px) {
+  body, svg {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  body, svg {
+    width:100%;
+  }
+}
 /*.hidden {display:none;}
 .show {display:inline !important;
 }*/
