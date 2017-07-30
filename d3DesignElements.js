@@ -198,6 +198,8 @@ function mouseOver(d,i) {
     //Do some sort of color change
 }
 
+var rectMove = arcWidth + arcGap;
+
 function mouseDown() {
   console.log(d3.eventclientX);
   console.log(d3.eventclientY);
@@ -216,11 +218,11 @@ rectPath.transition()
     clip2.transition()
           .duration(300)
           .ease(d3.easeElastic)
-          .attr("transform", "translate(100)");
+          .attr("transform", "translate(" + rectMove + ")");
     rectPath.transition()
         .duration(300)
         .ease(d3.easeElastic)
-        .attr("transform", "translate(100)");
+        .attr("transform", "translate(" + rectMove + ")");
         isMoved = true;
   }
 }
