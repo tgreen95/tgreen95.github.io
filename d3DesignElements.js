@@ -9,7 +9,7 @@ var CCRadius = sw * 0.1; // CC stands for Centre Circle
 
 // Variables for central circle mask
 var farLeft = farRight = maskTop = maskBottom = CCRadius
-    , xCentreOffset = sw * 0.04583
+    , xCentreOffset = sw * 0.07
     , yCentreOffset = sw * 0.02604
 
 // Variables for arcs, arcOuter,
@@ -24,95 +24,128 @@ var arcInner = arcOuter = startAngle = endAngle = 0
     , angle2 = -3
     , angle3 = 6
     , angle4 = -8
-    , isMoved = false;
+    , arcLength = 0
+    , arcNumber = 0
+    , move = moves = 0
+    , isStarted = isMoved = false
+    , toRadians = Math.PI / 180
+    , toDegrees = 180 / Math.PI
+    , ninetyDegrees = tau / 4
+    , y4 = cy - yCentreOffset
+    , y5 = cy + yCentreOffset
+    , rectChordLength = y5 - y4
+    , rectangleTopEdgeAngle =  ninetyDegrees - (Math.asin((rectChordLength / (2 * CCRadius))))
+    , rectangleBottomEdgeAngle = ninetyDegrees + (Math.asin((rectChordLength / (2 * CCRadius))))
+    , arc0 = {startAngle: 0, endAngle: 120 * toRadians, angle: 10, rotationSpeed: 1.5}
+    , arc1 = {startAngle: 0, endAngle: 300 * toRadians, angle: 3,  rotationSpeed: -2.8}
+    , arc2 = {startAngle: 0, endAngle: 240 * toRadians, angle: 20, rotationSpeed: 2.5}
+    , arc3 = {startAngle: 0, endAngle: 180 * toRadians, angle: 15, rotationSpeed: -1.3}
+    , arcData = [arc0, arc1, arc2, arc3];
 
-//Code to create a spinning arc
-/****** Create an object array out of the four arcs below *************
-********* and access each one to reduce code below *******************/
-var arc1 = d3.arc()
-        .startAngle(function(d){ return startAngle = Math.random() * tau; })
-        .endAngle(function(d){return endAngle = startAngle + (.3 + Math.random()) * tau / 2; })
-        .innerRadius(function(d){ return arcInner = (arcOuter + arcGap); })
-        .outerRadius(function(d){ return arcOuter = (arcInner + arcWidth); })
-        .cornerRadius(30);
-
-var arc2 = d3.arc()
-        .startAngle(function(d){ return startAngle = Math.random() * tau; })
-        .endAngle(function(d){return endAngle = startAngle + (.3 + Math.random()) * tau / 2; })
-        .innerRadius(function(d){ return arcInner = (arcOuter + arcGap); })
-        .outerRadius(function(d){ return arcOuter = (arcInner + arcWidth); })
-        .cornerRadius(30);
-
-var arc3 = d3.arc()
-        .startAngle(function(d){ return startAngle = Math.random() * tau; })
-        .endAngle(function(d){return endAngle = startAngle + (.3 + Math.random()) * tau / 2; })
-        .innerRadius(function(d){ return arcInner = (arcOuter + arcGap); })
-        .outerRadius(function(d){ return arcOuter = (arcInner + arcWidth); })
-        .cornerRadius(30);
-
-var arc4 = d3.arc()
-        .startAngle(function(d){ return startAngle = Math.random() * tau; })
-        .endAngle(function(d){return endAngle = startAngle + (.3 + Math.random()) * tau / 2; })
-        .innerRadius(function(d){ return arcInner = (arcOuter + arcGap); })
-        .outerRadius(function(d){ return arcOuter = (arcInner + arcWidth); })
-        .cornerRadius(30);
-
+// Adds SVG element to the document page
 var svg = d3.select("body").append("svg"),
 			width = +svg.attr("width"),
 			height = +svg.attr("height"),
-			g = svg.append("g").attr("transform", "translate(" + cx + ", " + cy + ")");
+      arcs = svg.append("g")
+                  .attr("transform", "translate(" + cx + ", " + cy + ")")
+                  .attr("id", "arcs")
+                  .style("fill", arcColor)
+                  .style("opacity", .4);
 
-//Find a way to reduce this code into one function
-var arc1 = g.append("path")
-    .style("fill", arcColor)
-    .style("opacity", .4)
-    .attr("d", arc1);
+// Setup arc
+var arc = d3.arc()
+              .cornerRadius(30);
 
-var arc2 = g.append("path")
-    .style("fill", arcColor)
-    .style("opacity", .4)
-    .attr("d", arc2);
+// Create arc group appended to the "g" (group element)
+var arcGroup = arcs.selectAll("g")
+                        .data(arcData).enter()
+                    .append("g")
+                        .attr("id", function(d,i) { return "arc" + i.toString(); });
 
-var arc3 = g.append("path")
-    .style("fill", arcColor)
-    .style("opacity", .4)
-    .attr("d", arc3);
+// Create arcPaths from arcData array
+var arcPath = arcGroup.append("path")
+                    .attr("class", "arcPath")
+                    .attr("d", function(d) { return arc({
+                          innerRadius: arcInner = (arcOuter + arcGap),
+                          outerRadius: arcOuter = (arcInner + arcWidth),
+                          startAngle: d.startAngle,
+                          endAngle: d.endAngle
+                        })
+                    });
 
-var arc4 = g.append("path")
-    .style("fill", arcColor)
-    .style("opacity", .4)
-    .attr("d", arc4);
 
-// Find a way to reduce this code into one function
-d3.interval(function() {
-    arc1.transition()
-    .duration(3)
-    .attr("transform", "rotate(" + angle1 + ",0,0)")
-    return angle1 += 1.5;
-    }, 3);
+/*******************************************************************************
+*******************************************************************************/
+//*******************Code to create spinning arcs******************************
+arcPath.each(function transition(d) {
+  d.angle += d.rotationSpeed;
+  if(moves === 1) {
+                      d3.select("#arc0")
+                          .data(arcData.filter(function(d,i){
+                                                                if(i === 0) {
+                                                                    arcLength = d.endAngle - d.startAngle;
+                                                                    rectangleTopEdgeAngle = ninetyDegrees -
+                                                                        (Math.asin((rectChordLength / (2 * (CCRadius + arcGap +
+                                                                        (arcWidth / 2))))));
+                                                                    newAngle1 = (rectangleTopEdgeAngle - arcLength) * toDegrees;
+                                                                    oneStopped = true;
+                                                                    return d.angle = newAngle1;
+                                                                }}));
+  }
+  if(moves === 2) {
+                      d3.select("#arc1")
+                          .data(arcData.filter(function(d,i){
+                                                                if(i === 0) d.angle = newAngle1;
+                                                                if(i === 1) {
+                                                                    arcLength = d.endAngle - d.startAngle;
+                                                                    rectangleBottomEdgeAngle = ninetyDegrees +
+                                                                        (Math.asin((rectChordLength / (2 * (CCRadius + (2 * arcGap) +
+                                                                        (1.5 * arcWidth))))));
+                                                                    newAngle2 = rectangleBottomEdgeAngle * toDegrees;
+                                                                    return d.angle = newAngle2;
+                                                                }}));
+  }
+  // Stop first 3 inner arcs when wedge is in postion 3
+  if(moves === 3) {
+                      d3.select("#arc1")
+                          .data(arcData.filter(function(d,i){
+                                                                if(i === 0) d.angle = newAngle1;
+                                                                if(i === 1) d.angle = newAngle2;
+                                                                if(i === 2) {
+                                                                    arcLength = d.endAngle - d.startAngle;
+                                                                    rectangleTopEdgeAngle = ninetyDegrees -
+                                                                        (Math.asin((rectChordLength / (2 * (CCRadius + (3 * arcGap) +
+                                                                        (2.5 * arcWidth))))));
+                                                                    newAngle3 = (rectangleTopEdgeAngle  - arcLength) * toDegrees;
+                                                                    return d.angle = newAngle3;
+                                                                }}));
+  }
+  // Stop all arcs when wedge is in postion 4
+  if(moves === 4) {
+                      d3.select("#arc1")
+                          .data(arcData.filter(function(d,i){
+                                                                if(i === 0) d.angle = newAngle1
+                                                                if(i === 1) d.angle = newAngle2
+                                                                if(i === 2) d.angle = newAngle3
+                                                                if(i === 3) {
+                                                                    arcLength = d.endAngle - d.startAngle;
+                                                                    rectangleBottomEdgeAngle = ninetyDegrees +
+                                                                        (Math.asin((rectChordLength / (2 * (CCRadius + (4 * arcGap) +
+                                                                        (3.5 * arcWidth))))));
+                                                                    newAngle4 = rectangleBottomEdgeAngle * toDegrees;
+                                                                    return d.angle = newAngle4;
+                                                                }}));
+  }
+  // Spin arcs continuously
+  d3.select(this).transition()
+      .duration(3)
+      .attr("transform", "rotate(" + d.angle + ")")
+      .on("end", transition);
+  });
 
-d3.interval(function() {
-    arc2.transition()
-    .duration(3)
-    .attr("transform", "rotate(" + angle2 + ",0,0)")
-    return angle2 -= 2.5;
-    }, 3);
-
-d3.interval(function() {
-    arc3.transition()
-    .duration(3)
-    .attr("transform", "rotate(" + angle3 + ",0,0)")
-    return angle3 += 3.8;
-    }, 3);
-
-d3.interval(function() {
-    arc4.transition()
-    .duration(3)
-    .attr("transform", "rotate(" + angle4 + ",0,0)")
-    return angle4 -= 2.8;
-    }, 3);
-
-//Code to create a circle in the middle
+/*******************************************************************************
+*******************************************************************************/
+//***************Code to create a circle in the middle*************************
 // innerRect coordinates.
 var maskXStart = cx - farLeft
     , maskXEnd = cx + farRight
@@ -123,8 +156,8 @@ var maskXStart = cx - farLeft
     , x2 = x3 = x6 = x7 = maskXEnd
     , y7 = y8 = maskYEnd
     , x4 = x5 = cx - xCentreOffset
-    , y3 = y4 = cy - yCentreOffset
-    , y5 = y6 = cy + yCentreOffset;
+    , y3 = cy - yCentreOffset
+    , y6 = cy + yCentreOffset;
 
 //data array for mask shape
 var innerRectData = [
@@ -194,35 +227,68 @@ var rM = svg.append("path")
         .on("mousedown", mouseDown);
 
 function mouseOver(d,i) {
-  console.log("Some mouseover event");
-    //Do some sort of color change
+  console.log("Some mouseover event again");
+  //Do some sort of color change
 }
 
-var rectMove = arcWidth + arcGap;
+function rectMove() {
+    if(moves < 5) {
+      move += arcWidth + arcGap;
+    }
+}
 
 function mouseDown() {
-  console.log(d3.eventclientX);
-  console.log(d3.eventclientY);
-  if(isMoved) {
-clip2.transition()
-      .duration(300)
-      .ease(d3.easeBounce)
-      .attr("transform", "translate(0)");
-rectPath.transition()
-    .duration(300)
-    .ease(d3.easeBounce)
-    .attr("transform", "translate(0)");
-    isMoved = false;
+    if(isMoved && moves === 4) {
+        clip2.transition()
+              .duration(300)
+              .ease(d3.easeBounce)
+              .attr("transform", "translate(0)");
+        rectPath.transition()
+            .duration(300)
+            .ease(d3.easeBounce)
+            .attr("transform", "translate(0)");
+        rM.transition()
+            .duration(300)
+            .attr("transform", "translate(0)");
+      moves = 0;
+      move = 0;
+      isMoved = false;
   }
   else {
-    clip2.transition()
-          .duration(300)
-          .ease(d3.easeElastic)
-          .attr("transform", "translate(" + rectMove + ")");
-    rectPath.transition()
-        .duration(300)
-        .ease(d3.easeElastic)
-        .attr("transform", "translate(" + rectMove + ")");
-        isMoved = true;
+        rectMove();
+        clip2.transition()
+            .duration(300)
+            .ease(d3.easeElastic)
+            .attr("transform", "translate(" + move + ")");
+        rectPath.transition()
+            .duration(300)
+            .ease(d3.easeElastic)
+            .attr("transform", "translate(" + move + ")");
+        rM.transition()
+            .duration(300)
+            .attr("transform", "translate(" + move + ")");
+        moves++;
+        console.log("moves = " + moves);
+        arcNum();
+        if(moves === 4) isMoved = true;
   }
+}
+
+function arcNum() {
+   switch(moves) {
+     case 1:
+        arcNumber = 1;
+        break;
+     case 2:
+        arcNumber = 2;
+        break;
+     case 3:
+        arcNumber = 3;
+        break;
+      case 4:
+        arcNumber = 4;
+        break;
+      default:
+        break;
+   }
 }
