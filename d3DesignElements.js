@@ -27,7 +27,7 @@ var arcInner = arcOuter = startAngle = endAngle = 0
     , arcLength = 0
     , arcNumber = 0
     , move = moves = 0
-    , isStarted = isMoved = false
+    , isStarted = isWedgeAtEnd = false
     , toRadians = Math.PI / 180
     , toDegrees = 180 / Math.PI
     , ninetyDegrees = tau / 4
@@ -51,6 +51,8 @@ var svg = d3.select("body").append("svg"),
                   .attr("id", "arcs")
                   .style("fill", arcColor)
                   .style("opacity", .4);
+
+svg.attr("xmlns:xlink","http://www.w3.org/1999/xlink");
 
 // Setup arc
 var arc = d3.arc()
@@ -157,7 +159,9 @@ var maskXStart = cx - farLeft
     , y7 = y8 = maskYEnd
     , x4 = x5 = cx - xCentreOffset
     , y3 = cy - yCentreOffset
-    , y6 = cy + yCentreOffset;
+    , y6 = cy + yCentreOffset
+    , wedgeSpeed = 300
+    , isLinkAdded = false;
 
 //data array for mask shape
 var innerRectData = [
@@ -194,8 +198,9 @@ var clip1 = svg.append("clipPath")
         .attr("r", CCRadius);
 
 var clip2 = svg.append("clipPath")
-        .attr("id","circle-mask")
+        .attr("id","wedge-mask")
         .append("circle")
+        .attr("id","wedge-mask-circle")
         .attr("cx", cx)
         .attr("cy", cy)
         .attr("r", CCRadius);
@@ -206,7 +211,7 @@ var lineMask = d3.line()
         .y(function(d,i){ return d.y; });
 
 //append line mask to svg and create clippath
- svg.append("path")
+ var circlePath = svg.append("path")
         .style("fill", arcColor)
         .style("opacity", .4)
         .attr("d",lineMask(centralCircleData))
@@ -215,6 +220,7 @@ var lineMask = d3.line()
 var rectPath = svg.append("path")
         .style("fill", arcColor)
         .style("opacity", .4)
+        .attr("id","rectPath")
         .attr("d",lineMask(innerRectData))
         .attr("clip-path","url(#circle-mask)");
 
@@ -222,73 +228,120 @@ var rM = svg.append("path")
         .style("fill", "transparent")
         .style("opacity", .4)
         .data(sliderData)
+        .attr("id","rM")
         .attr("d",lineMask(innerRectData))
         .on("mouseover", mouseOver)
         .on("mousedown", mouseDown);
 
-function mouseOver(d,i) {
-  console.log("Some mouseover event again");
-  //Do some sort of color change
+// Create rectangle to hold hyperlink text
+var linkRect = svg.append("a")
+        .attr("target","_blank")
+        .attr("id","link-rect");
+
+        linkRect.append("rect")
+        .attr("x", cx - (xCentreOffset/2))
+        .attr("y", cy - (yCentreOffset/2))
+        .attr("width",xCentreOffset)
+        .attr("height",yCentreOffset)
+        .attr("fill","transparent")
+        ;
+
+// Hyperlink text
+var linkText = svg.append("text")
+.text("")
+.style("fill","linen")
+.attr("dy",".35em")
+.attr("id","link-text")
+.style("pointer-events", "none")
+.attr("x", cx - (xCentreOffset/2))
+.attr("y", cy)
+
+// Change URL and text each time the wedge moves
+function changeLink() {
+  console.log("Link being updated");
+  switch(moves) {
+      case 0: linkRect.attr("xlink:href", null);
+              linkText.text("");
+      break;
+      case 1: console.log("in case 1");
+              linkRect.attr("xlink:href","https://tgreen95.github.io/about_me.html");
+              linkText.text("About Me");
+      break;
+      case 2: linkRect.attr("xlink:href","https://tgreen95.github.io/resume.html");
+              linkText.text("Resume");
+      break;
+      case 3: linkRect.attr("xlink:href","https://tgreen95.github.io/projects.html");
+              linkText.text("Projects");
+      break;
+      case 4: linkRect.attr("xlink:href","https://tgreen95.github.io/fun_stuff.html");
+              linkText.text("Fun Stuff");
+    }
 }
 
+// What happens when the cursor is moved over the wedge
+function mouseOver(d,i) {
+  // TODO some sort of color change
+}
+
+// Calculate the distance the wedge should move
 function rectMove() {
     if(moves < 5) {
       move += arcWidth + arcGap;
     }
 }
 
+// What happens when the mouse button is pressed in the wedge
 function mouseDown() {
-    if(isMoved && moves === 4) {
+  // When the wedge has moved all the way out it should move back to the start when it is pressed again
+    if(isWedgeAtEnd) {
+      moves = 0;
+      move = 0;
+      isWedgeAtEnd = !isWedgeAtEnd;
+      // Move all wedge associated elements back to start position
         clip2.transition()
-              .duration(300)
-              .ease(d3.easeBounce)
-              .attr("transform", "translate(0)");
+             .duration(wedgeSpeed)
+             .ease(d3.easeBounce)
+             .attr("transform", "translate(0)");
         rectPath.transition()
-            .duration(300)
+            .duration(wedgeSpeed)
             .ease(d3.easeBounce)
             .attr("transform", "translate(0)");
         rM.transition()
-            .duration(300)
+            .duration(wedgeSpeed)
             .attr("transform", "translate(0)");
-      moves = 0;
-      move = 0;
-      isMoved = false;
+        linkRect.transition()
+            .duration(wedgeSpeed)
+            .attr("transform", "translate(0)");
+        changeLink();
+        linkText.transition()
+            .duration(wedgeSpeed)
+            .ease(d3.easeBounce)
+            .attr("transform", "translate(0)");
   }
   else {
-        rectMove();
+    moves++;
+    // Calculate the next postion for the wedge and its associated components
+    rectMove();
+    // Move wedge associated elements to next position
         clip2.transition()
-            .duration(300)
+            .duration(wedgeSpeed)
             .ease(d3.easeElastic)
             .attr("transform", "translate(" + move + ")");
         rectPath.transition()
-            .duration(300)
+            .duration(wedgeSpeed)
             .ease(d3.easeElastic)
             .attr("transform", "translate(" + move + ")");
         rM.transition()
-            .duration(300)
+            .duration(wedgeSpeed)
             .attr("transform", "translate(" + move + ")");
-        moves++;
-        console.log("moves = " + moves);
-        arcNum();
-        if(moves === 4) isMoved = true;
-  }
-}
-
-function arcNum() {
-   switch(moves) {
-     case 1:
-        arcNumber = 1;
-        break;
-     case 2:
-        arcNumber = 2;
-        break;
-     case 3:
-        arcNumber = 3;
-        break;
-      case 4:
-        arcNumber = 4;
-        break;
-      default:
-        break;
-   }
+        linkRect.transition()
+            .duration(wedgeSpeed)
+            .attr("transform", "translate(" + move + ")");
+        changeLink();
+        linkText.transition()
+            .duration(wedgeSpeed)
+            .ease(d3.easeElastic)
+            .attr("transform", "translate(" + move + ")");
+        if(moves === 4) isWedgeAtEnd = true;
+    }
 }
