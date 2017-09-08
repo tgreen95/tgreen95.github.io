@@ -1,10 +1,10 @@
 // General use variables
-var sw = screen.width;
-    sh = screen.height;
+var sw = window.width;
+    sh = window.height;
 
 // Variables for circles
 var cx = sw/2;
-var cy = (sh/2) - (sw * 0.026);
+var cy = (sh/2)/* - (sw * 0.026)*/;
 var CCRadius = sw * 0.1; // CC stands for Centre Circle
 
 // Variables for central circle mask
