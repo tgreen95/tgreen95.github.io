@@ -1,6 +1,6 @@
 // General use variables
-var sw = window.width;
-    sh = window.height;
+var sw = window.innerWidth;
+    sh = window.innerHeight;
 
 // Variables for circles
 var cx = sw/2;
