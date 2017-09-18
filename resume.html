@@ -12,36 +12,74 @@
 		<!-- d3.v4.js -->
 		<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 		<style>
-					.col-lg-12 {
-						height: 100px;
-						background-color: blue;
-						color: white;
-						font-size: 1em;
-					}
-					.col-xs-6 {
-						height: 100px;
-						background-color: green;
-						color: black;
-						font-size: 1em;
-						border: 2px solid black;
-					}
+
 		</style>
 	</head>
-	<body id="background">
-    <h1>Resume Page</h1>
+	<body id="background" style="background-image: url('assets/images/fractal_background_2.png')">
+		<header class="titleBar">Resume</header>
+		<div >
+			<h1</h1>
+		</div>
 
 		<!-- Grid Classes: .container: wrapper class for rows
 										.rows: contains all your column classes
 										.col-lg-##, col-md-##, col-xs-##: The sizes of the columns in your row -->
-			<div class="container">
-					<div class="row">
-							<div class="col-lg-12">.col-lg-12</div>
-					</div>
-					<div class="row">
-							<div class="col-xs-6">.col-xs-6</div>
-							<div class="col-xs-6">.col-xs-6</div>
-					</div>
+		<div class="container">
+			<div class="col-lg-12">
+					<h2>Career Objective</h2>
+					<p id="careerObjective">To build on my experiences from the AUT University Graduate Programme. I want to advance my software development skills by gaining employment where I can continue to work at all levels of full stack development. To gain a deeper knowledge about the structure and execution of code over the next few years to move towards my long-term goal of becoming a Software Team Lead.</p>
+				</div>
+			<div class="splitColumns">
+				<div class="col-xs-1">
+					<p>
+					</p>
+				</div>
+				<div class="col-xs-3">
+					<h2 id="summaryProfile">Summary Profile</h2>
+					<h3>Technical Skills:</h3>
+					<ul>
+						<li class="profile">HTML, CSS, JavaScript, C#, Java, Android, MSSQL</li>
+					</ul>
+					<h3>Skills and Attributes:</h3>
+					<ul>
+						<li class="profile">Creative problem solving</li>
+						<li class="profile">Understanding of Agile Scrum methodologies</li>
+						<li class="profile">Excellent communication and people skills</li>
+						<li class="profile">Enthusiastic team player, very conscientious, great attention to detail</li>
+					</ul>
+				</div>
+				<div class="col-xs-1">
+				</div>
+				<div class="col-xs-2">
+					<h2 id="referees">Referees</h2>
+					<p>Ian Birch<br>ICT Strategey &amp Architecture Director<br>Auckland University of Technology<br>ph: 09 921 9999 ext. 9938<br>e-mail: ian.birch@aut.ac.nz</p>
+					<p>Roy Cullum<br>ICT Infrastructure Services Director<br>Auckland University of Technology<br>ph: 09 921 9999 ext. 9819<br>e-mail: roy.cullum@aut.ac.nz</p>
+				</div>
+				<div class="col-xs-1">
+					<p>
+					</p>
+				</div>
+				<div class="col-xs-3">
+					<p>
+					</p>
+				</div>
+				<div class="col-xs-1">
+					<p>
+					</p>
+				</div>
+				<div class="col-lg-12" id="achievementsCol">
+					<h2>Achievements</h2>
+					<ul id="achievements">
+						<li class="achieved">Presenting and demonstrating “AI on Demand” at two AUT Digital Day events </li>
+						<li class="achieved">Scrum Master on Space Master 2 software project (SharePoint)</li>
+						<li class="achieved">UI/UX design for AUT student prototype app (Women in Leadership)</li>
+						<li class="achieved">Created staff training course for business process mapping software (Promapp)</li>
+						<li class="achieved">Final year degree project - Motorcycle HUD powered by Android</li>
+					</ul>
+				</div>
 			</div>
+		</div>
+		<footer class="titleBar"></footer>
 
 <!-- <script type="text/javascript" src="animate_timer_arc.js"></script> -->
 		<!--<div id="titleBar">
