@@ -151,3 +151,6 @@ div#achievementsCol {
     background-color: red;
     border: 2px solid black;
 }
+#link-text {
+    font-size: 2em; 
+}
