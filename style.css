@@ -1,7 +1,6 @@
 html, body, svg {
   width: 100%;
   height: 100%;
-  font-size: 1.4em;
 }
 
 @media screen and (min-width : 500px) {
@@ -78,20 +77,77 @@ html, body, svg {
   position: relative;
   overflow: hidden;
 }
-#titleBar {
-  width: 100%;
-  height: 6em;
-  padding: 2em, 2em, 2em, 2em;
-  background: #272822;
-  position: relative;
+.titleBar {
+  margin:0.4em 0.4em 0.05em 0.4em;
+  color:#d6d6d6;
+  background-color: rgba(39,40,34,0.6);
+  font-family: Arial, "sans serif";
+  font-size: 5em;
+  text-align: center;
+  padding: 0.3em;
+  border: 2px solid black;
 }
 #title {
   font-family: Arial, "sans serif";
-  font-size: 2em;
-  padding: 0.1em, 0.1em, 0.6em, 0.6em;
-  color: linen;
-  text-decoration: underline;
-  position: absolute;
-  left: 0.6em;
-  top: -0.2em;
+  font-size: 5em;
+  text-align: center;
+  padding: 0.3em;
+}
+h1 {
+    color: #d6d6d6;
+    text-align: center;
+}
+h2 {
+    color: #d6d6d6;
+}
+h3 {
+    color: #d6d6d6;
+}
+li.profile {
+    color: #d6d6d6;
+    font-size: 0.8em
+}
+li.achieved {
+    color: #d6d6d6;
+}
+p#careerObjective {
+    font-size: 0.5em;
+}
+ul#achievements {
+    font-size: 0.5em;
+}
+h2#summaryProfile {
+    text-align: center;
+}
+h2#referees {
+    text-align: center;
+}
+div#achievementsCol {
+    height: 200px;
+}
+.col-lg-12 {
+    height: 150px;
+    word-wrap: normal;
+    font-family: Arial,sans-serif;
+    font-size: 2em;
+    color: #d6d6d6;
+    margin: 0.5em;
+    background-color: blue;
+    border: 2px solid black;
+}
+.col-xs-1 {
+    height: 300px;
+    background-color: transparent;
+}
+.col-xs-2 {
+    height: 300px;
+    background-color: green;
+    border: 2px solid black;
+    color: #d6d6d6;
+    font-size: 0.8em
+}
+.col-xs-3 {
+    height: 300px;
+    background-color: red;
+    border: 2px solid black;
 }
