@@ -251,7 +251,7 @@ var linkText = svg.append("text")
 .text("")
 .style("fill","linen")
 .attr("dy",".35em")
-.attr("id","link-text")
+/*.attr("id","link-text")*/
 .style("pointer-events", "none")
 .attr("x", cx - (xCentreOffset/2))
 .attr("y", cy)
