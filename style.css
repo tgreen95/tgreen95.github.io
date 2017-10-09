@@ -17,7 +17,7 @@ html, body, svg {
 /*.hidden {display:none;}
 .show {display:inline !important;
 }*/
-#background {
+body {
   background-image: url("assets/images/fractal_background_2.png");
   -webkit-background-size: cover;
   -moz-background-size: cover;
